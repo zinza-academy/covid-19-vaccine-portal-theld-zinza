@@ -17,7 +17,9 @@
     },
     "plugins": [
         "react",
-        "prettier"
+        "prettier",
+        "react-hooks",
+        "typescript"
     ],
     "rules": {
       "semi": "off",
