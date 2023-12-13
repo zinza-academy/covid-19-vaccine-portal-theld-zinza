@@ -1,9 +1,12 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import authImage from '../assets/img/auth1.png';
 import { Outlet } from 'react-router-dom';
 
 const AuthLayout: React.FC<any> = () => {
+  const queryClient = new QueryClient();
+
   return (
-    <div>
+    <QueryClientProvider client={queryClient}>
       <div className="flex h-screen">
         <div
           className="hidden lg:block lg:w-1/2 bg-cover bg-center"
@@ -12,7 +15,7 @@ const AuthLayout: React.FC<any> = () => {
           <Outlet />
         </div>
       </div>
-    </div>
+    </QueryClientProvider>
   );
 };
 
