@@ -2761,6 +2761,15 @@
   resolved "https://registry.npmjs.org/@types/use-sync-external-store/-/use-sync-external-store-0.0.3.tgz"
   integrity sha512-EwmlvuaxPNej9+T4v5AuBPJa2x2UOJVdjCtDHgcDqitUeOtjnJKJ+apYjVcAoBEMjKW1VVFGZLUb5+qqa09XFA==
 
+"@types/webpack@4.x || 5.x":
+  version "5.28.5"
+  resolved "https://registry.npmjs.org/@types/webpack/-/webpack-5.28.5.tgz"
+  integrity sha512-wR87cgvxj3p6D0Crt1r5avwqffqPXUkNlnQ1mjU93G7gCuFjufZR4I6j8cz5g1F1tTYpfOOFvly+cmIQwL9wvw==
+  dependencies:
+    "@types/node" "*"
+    tapable "^2.2.0"
+    webpack "^5"
+
 "@types/ws@^8.5.5":
   version "8.5.8"
   resolved "https://registry.npmjs.org/@types/ws/-/ws-8.5.8.tgz"

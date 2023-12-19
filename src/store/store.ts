@@ -1,7 +1,13 @@
-import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
+import { configureStore, ThunkAction, Action, combineReducers } from '@reduxjs/toolkit';
+import { injectRegistrationSlice, formStepSlice } from './slices/injectRegistrationSlice';
+
+const rootReducer = combineReducers({
+  injectRegistrationForm: injectRegistrationSlice.reducer,
+  formStepState: formStepSlice.reducer,
+});
 
 export const store = configureStore({
-  reducer: {},
+  reducer: rootReducer,
 });
 
 export type AppDispatch = typeof store.dispatch;
