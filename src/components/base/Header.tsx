@@ -68,7 +68,7 @@ const Header: FC<Props> = () => {
                   <Link to="/">Trang chủ</Link>
                 </ListItemButton>
                 <ListItemButton sx={{ textAlign: 'center' }}>
-                  <Link to="/">Đăng ký tiêm</Link>
+                  <Link to="/injection-register">Đăng ký tiêm</Link>
                 </ListItemButton>
                 <ListItemButton sx={{ textAlign: 'center' }}>
                   <Typography onClick={handleClick}>

@@ -6,6 +6,7 @@ import ForgotPasswordPage from './pages/authPage/ForgotPassword';
 import RegisterPage from './pages/authPage/Register';
 import DefaultLayout from './layouts/DefaultLayout';
 import HomePage from './pages/HomePage/Home';
+import InjectRegistration from './pages/injectRegistraionPage/InjectRegistration';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         </Route>
         <Route path="/" element={<DefaultLayout />}>
           <Route path="" element={<HomePage />} />
+          <Route path="/injection-register" element={<InjectRegistration />} />
         </Route>
       </Routes>
     </BrowserRouter>
