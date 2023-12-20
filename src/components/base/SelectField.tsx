@@ -1,41 +1,28 @@
 import { MenuItem, Select } from '@mui/material';
-import { FC } from 'react';
 import FieldErrorMsg from './FieldErrorMsg';
 import FieldLabel from './FieldLabel';
-import { Control, Controller } from 'react-hook-form';
+import { Controller, FieldValues, UseControllerProps } from 'react-hook-form';
 
 interface SelectionObject {
   value: string | number | undefined;
   label: string | number;
 }
 
-export interface FormData {
-  priority: number;
-  insurance_number?: string;
-  career?: string | undefined;
-  workplace?: string;
-  current_address?: string;
-  injection_date: string;
-  injection_phase: number;
-}
-
-interface Props {
+interface SelectFieldProps<T extends FieldValues> extends UseControllerProps<T> {
   list: SelectionObject[];
-  control: Control<FormData>;
   label: string;
   errorMsg?: string;
   required?: boolean;
-  name:
-    | 'priority'
-    | 'insurance_number'
-    | 'career'
-    | 'workplace'
-    | 'current_address'
-    | 'injection_date'
-    | 'injection_phase';
 }
 
-const SelectField: FC<Props> = ({ list, control, label, name, required, errorMsg }) => {
+const SelectField = <T extends FieldValues>({
+  list,
+  control,
+  label,
+  name,
+  required,
+  errorMsg,
+}: SelectFieldProps<T>) => {
   return (
     <div>
       <FieldLabel label={label} required={required} htmlFor={name} />

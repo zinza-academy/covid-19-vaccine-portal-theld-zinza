@@ -11,6 +11,11 @@ export const jobs = [
   { value: 9, label: 'Khác' },
 ];
 
+export const genderList = [
+  { value: 0, label: 'Nữ' },
+  { value: 1, label: 'Nam' },
+];
+
 export const dayPhases = [
   { value: 0, label: 'Sáng' },
   { value: 1, label: 'Trưa' },

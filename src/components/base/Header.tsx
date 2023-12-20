@@ -93,28 +93,32 @@ const Header: FC<Props> = () => {
             anchorEl={anchorEl}
             open={open}
             onClose={handleClose}>
-            <MenuItem onClick={handleClose}>
-              <div className="bg-purple-100 rounded-lg p-2">
-                <PeopleAlt className="text-purple-900" />
-              </div>
-              <div className="block mx-4">
-                <Typography variant="body1" component="h2">
-                  Tra cứu chứng nhận tiêm
-                </Typography>
-                <Typography variant="body2">Cập nhật nhanh và chính xác nhất</Typography>
-              </div>
-              <ArrowForward className="text-purple-900" />
-            </MenuItem>
-            <MenuItem onClick={handleClose}>
-              <div className="bg-blue-100 rounded-lg p-2">
-                <PeopleAlt className="text-blue-600" />
-              </div>
-              <div className="block mx-4">
-                <Typography variant="body1">Tra cứu kết quả đăng ký</Typography>
-                <Typography variant="body2">Cập nhật nhanh và chính xác nhất</Typography>
-              </div>
-              <ArrowForward className="text-blue-600" />
-            </MenuItem>
+            <Link to="/vaccine-certificate">
+              <MenuItem onClick={handleClose}>
+                <div className="bg-purple-100 rounded-lg p-2">
+                  <PeopleAlt className="text-purple-900" />
+                </div>
+                <div className="block mx-4">
+                  <Typography variant="body1" component="h2">
+                    Tra cứu chứng nhận tiêm
+                  </Typography>
+                  <Typography variant="body2">Cập nhật nhanh và chính xác nhất</Typography>
+                </div>
+                <ArrowForward className="text-purple-900" />
+              </MenuItem>
+            </Link>
+            <Link to="/vaccine-registrations">
+              <MenuItem onClick={handleClose}>
+                <div className="bg-blue-100 rounded-lg p-2">
+                  <PeopleAlt className="text-blue-600" />
+                </div>
+                <div className="block mx-4">
+                  <Typography variant="body1">Tra cứu kết quả đăng ký</Typography>
+                  <Typography variant="body2">Cập nhật nhanh và chính xác nhất</Typography>
+                </div>
+                <ArrowForward className="text-blue-600" />
+              </MenuItem>
+            </Link>
           </Menu>
         </Container>
       </AppBar>
