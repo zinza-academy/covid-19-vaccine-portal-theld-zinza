@@ -77,7 +77,7 @@ const Header: FC<Props> = () => {
                   </Typography>
                 </ListItemButton>
                 <ListItemButton sx={{ textAlign: 'center' }}>
-                  <Link to="/">Tài liệu</Link>
+                  <Link to="/documents">Tài liệu</Link>
                 </ListItemButton>
                 <ListItemButton sx={{ textAlign: 'center' }}>
                   <LoginBtn to="/auth/login">Đăng nhập</LoginBtn>

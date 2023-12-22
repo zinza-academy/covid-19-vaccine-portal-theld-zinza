@@ -48,7 +48,7 @@ interface DistrictList extends Province {
   wards: Ward[];
 }
 
-const useProvinces = (province_code: string | number, district_code: string | number) => {
+const useProvinces = (province_code?: string | number, district_code?: string | number) => {
   const provinces = useQuery<ProvinceList[]>({
     queryKey: ['province'],
     queryFn: async () => {
