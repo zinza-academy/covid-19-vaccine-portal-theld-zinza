@@ -11,6 +11,11 @@ import VaccineCertificate from './pages/PortalPage/VaccineCertificate';
 import PortalLayout from './layouts/PortalLayout';
 import VaccineRegistrations from './pages/PortalPage/VaccineRegistrations';
 import UserInfo from './pages/PortalPage/UserInfo';
+import AdminLayout from './layouts/AdminLayout';
+import AdminVaccinationPlacePage from './pages/adminPage/VaccinationPlacePage';
+import VaccineRegistrationPage from './pages/adminPage/VaccineRegistrationPage';
+import DocumentPage from './pages/adminPage/DocumentPage';
+import ListDocument from './pages/PortalPage/ListDocumentPage';
 
 function App() {
   return (
@@ -24,11 +29,18 @@ function App() {
         <Route path="/" element={<DefaultLayout />}>
           <Route path="" element={<HomePage />} />
           <Route path="/injection-register" element={<InjectRegistration />} />
+          <Route path="/documents" element={<ListDocument />} />
 
           <Route path="" element={<PortalLayout />}>
             <Route path="/vaccine-certificate" element={<VaccineCertificate />} />
             <Route path="/vaccine-registrations" element={<VaccineRegistrations />} />
             <Route path="/user-info" element={<UserInfo />} />
+          </Route>
+
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route path="/admin/vaccination-places" element={<AdminVaccinationPlacePage />} />
+            <Route path="/admin/vaccine-registrations" element={<VaccineRegistrationPage />} />
+            <Route path="/admin/documents" element={<DocumentPage />} />
           </Route>
         </Route>
       </Routes>

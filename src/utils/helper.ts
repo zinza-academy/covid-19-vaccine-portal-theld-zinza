@@ -1,4 +1,4 @@
-export function ConvertGenderText(value: number) {
+export function ConvertGenderText(value?: number) {
   switch (value) {
     case 0:
       return 'Nữ';

@@ -23,6 +23,12 @@ export const dayPhases = [
   { value: 3, label: 'Tối' },
 ];
 
+export const VaccineRegistrationStatus = [
+  { value: 0, label: 'Chưa xử lý' },
+  { value: 1, label: 'Chấp thuận' },
+  { value: 2, label: 'Từ chối' },
+];
+
 export const priorities = [
   {
     value: 0,
