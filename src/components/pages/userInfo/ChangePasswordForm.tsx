@@ -1,4 +1,4 @@
-import { Box, Button, TextField, Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import { FC, useState } from 'react';
 import * as Yup from 'yup';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -6,8 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Link, useNavigate } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import { LoadingButton } from '@mui/lab';
-import FieldLabel from '../../base/FieldLabel';
-import FieldErrorMsg from '../../base/FieldErrorMsg';
+import InputTextField from '../../base/InputTextField';
 
 const ChangePasswordForm: FC = () => {
   const userInfoSchema = Yup.object().shape({
@@ -25,7 +24,7 @@ const ChangePasswordForm: FC = () => {
   type Payload = Yup.InferType<typeof userInfoSchema>;
 
   const {
-    register,
+    control,
     handleSubmit,
     formState: { errors },
   } = useForm<Payload>({
@@ -46,34 +45,26 @@ const ChangePasswordForm: FC = () => {
     <Box>
       <form onSubmit={handleSubmit(onSubmitInfo)}>
         <Typography variant="body1" fontWeight={600}>
-          Thông tin cá nhân <EditIcon sx={{ Opacity: 0.5 }} />
+          Mật khẩu <EditIcon sx={{ Opacity: 0.5 }} />
         </Typography>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4">
-          <div className="input-group">
-            <FieldLabel label="Mật khẩu" required={true} htmlFor="password" />
-            <TextField
-              className="w-full"
-              type="password"
-              id="password"
-              placeholder="Mật khẩu"
-              variant="outlined"
-              {...register('password')}
-            />
-            <FieldErrorMsg msg={errors.password?.message} />
-          </div>
-          <div className="input-group">
-            <FieldLabel label="Xác nhận lại mật khẩu" required={true} htmlFor="rePassword" />
-            <TextField
-              className="w-full"
-              type="password"
-              id="rePassword"
-              placeholder="Xác nhận lại mật khẩu"
-              variant="outlined"
-              {...register('rePassword')}
-            />
-            <FieldErrorMsg msg={errors.rePassword?.message} />
-          </div>
+          <InputTextField
+            label="Mật khẩu mới"
+            type="password"
+            name="password"
+            control={control}
+            required={true}
+            errorMsg={errors.password?.message}
+          />
+          <InputTextField
+            label="Xác nhận lại mật khẩu"
+            type="password"
+            name="rePassword"
+            control={control}
+            required={true}
+            errorMsg={errors.rePassword?.message}
+          />
         </div>
         <div className="action-group flex gap-2 p-4">
           <Link to="/">

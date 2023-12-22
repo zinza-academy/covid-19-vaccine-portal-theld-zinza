@@ -1,4 +1,4 @@
-import { Box, Button, TextField, Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import { FC, useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -7,10 +7,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import { LoadingButton } from '@mui/lab';
 import useProvinces from '../../../hooks/UseProvinces';
-import FieldLabel from '../../base/FieldLabel';
-import FieldErrorMsg from '../../base/FieldErrorMsg';
 import SelectField from '../../base/SelectField';
 import { genderList } from '../../../utils/constants/constants';
+import InputTextField from '../../base/InputTextField';
 
 interface dataProp {
   name: string;
@@ -45,7 +44,6 @@ const UserInfoForm: FC = () => {
   type Payload = Yup.InferType<typeof userInfoSchema>;
 
   const {
-    register,
     watch,
     getValues,
     handleSubmit,
@@ -88,28 +86,19 @@ const UserInfoForm: FC = () => {
         </Typography>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4">
-          <div className="input-group">
-            <FieldLabel label="Họ và tên" required={true} htmlFor="name" />
-            <TextField
-              className="w-full"
-              id="name"
-              placeholder="Họ và tên"
-              variant="outlined"
-              {...register('name')}
-            />
-            <FieldErrorMsg msg={errors.name?.message} />
-          </div>
-          <div className="input-group">
-            <FieldLabel label="Ngày sinh" required={true} htmlFor="birthday" />
-            <TextField
-              className="w-full"
-              id="birthday"
-              type="date"
-              variant="outlined"
-              {...register('birthday')}
-            />
-            <FieldErrorMsg msg={errors.birthday?.message} />
-          </div>
+          <InputTextField
+            label="Họ và tên"
+            name="name"
+            control={control}
+            errorMsg={errors.name?.message}
+          />
+          <InputTextField
+            label="Ngày sinh"
+            type="date"
+            name="birthday"
+            control={control}
+            errorMsg={errors.birthday?.message}
+          />
           <SelectField
             list={genderList}
             label="Giới tính"
