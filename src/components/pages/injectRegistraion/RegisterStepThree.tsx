@@ -2,6 +2,7 @@ import { Box, Stack, Typography } from '@mui/material';
 import { FC, useState } from 'react';
 import { Link } from 'react-router-dom';
 import NavigationButton from './NavigationButton';
+import { ConvertGenderText } from '../../../utils/helper';
 
 interface dataProp {
   inject_id: string;
@@ -11,9 +12,9 @@ interface dataProp {
   person_id: string;
   insurance_number: string;
   phone_number: string;
-  province_id: string | number;
-  district_id: string | number;
-  ward_id: string | number;
+  province: string;
+  district: string;
+  ward: string;
 }
 
 interface DetailItemProp {
@@ -40,9 +41,9 @@ const RegisterStepThree: FC = () => {
     person_id: '123123123123',
     insurance_number: '123321123321',
     phone_number: '123321123321',
-    province_id: 1,
-    district_id: 2,
-    ward_id: 3,
+    province: 'Hà Nội',
+    district: 'Quận Nam Từ Liêm',
+    ward: 'Phường Minh Khai',
   };
 
   const handleExport = () => {
@@ -83,16 +84,16 @@ const RegisterStepThree: FC = () => {
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
           <DetailItem title="Họ và tên" value={data.name} />
           <DetailItem title="Ngày sinh" value={data.birthday} />
-          <DetailItem title="Giới tính" value={data.gender} />
+          <DetailItem title="Giới tính" value={ConvertGenderText(data.gender)} />
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           <DetailItem title="Số CMND/CCCD/Mã định danh công dân" value={data.person_id} />
           <DetailItem title="Số thẻ BHYT" value={data.insurance_number} />
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <DetailItem title="Tỉnh/Thành phố" value={data.province_id} />
-          <DetailItem title="Quận/Huyện" value={data.district_id} />
-          <DetailItem title="Xã/Phường" value={data.ward_id} />
+          <DetailItem title="Tỉnh/Thành phố" value={data.province} />
+          <DetailItem title="Quận/Huyện" value={data.district} />
+          <DetailItem title="Xã/Phường" value={data.ward} />
         </div>
       </Stack>
       <NavigationButton loading={loading} handleNextStep={handleExport} />

@@ -1,4 +1,4 @@
-import { Box, Stack, TextField, Typography } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import { FC } from 'react';
 import * as Yup from 'yup';
 import {
@@ -8,13 +8,12 @@ import {
 } from '../../../store/slices/injectRegistrationSlice';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import FieldLabel from '../../base/FieldLabel';
-import FieldErrorMsg from '../../base/FieldErrorMsg';
 import { useAppDispatch, useAppSelector } from '../../../store';
 import NavigationButton from './NavigationButton';
 import { dayPhases, priorities } from '../../../utils/constants/constants';
 import { InjectRegisterStepOneTexts } from '../../../utils/constants/texts';
 import SelectField from '../../base/SelectField';
+import InputTextField from '../../base/InputTextField';
 
 const RegisterStepOne: FC = () => {
   const formSchema = Yup.object().shape({
@@ -37,7 +36,6 @@ const RegisterStepOne: FC = () => {
   const modelData = useAppSelector(injectRegistrationFormData);
 
   const {
-    register,
     handleSubmit,
     control,
     formState: { errors },
@@ -67,70 +65,43 @@ const RegisterStepOne: FC = () => {
               required={true}
               errorMsg={errors.priority?.message}
             />
-            <div className="input-group">
-              <FieldLabel label="Số thẻ BHYT" htmlFor="insurance_number" />
-              <TextField
-                className="w-full"
-                id="insurance_number"
-                placeholder="Số thẻ BHYT"
-                variant="outlined"
-                {...register('insurance_number')}
-              />
-              <FieldErrorMsg msg={errors.insurance_number?.message} />
-            </div>
+            <InputTextField
+              label="Số thẻ BHYT"
+              control={control}
+              name="insurance_number"
+              errorMsg={errors.insurance_number?.message}
+            />
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="input-group">
-              <FieldLabel label="Nghề nghiệp" htmlFor="career" />
-              <TextField
-                className="w-full"
-                id="career"
-                placeholder="Nghề nghiệp"
-                variant="outlined"
-                {...register('career')}
-              />
-              <FieldErrorMsg msg={errors.career?.message} />
-            </div>
-            <div className="input-group">
-              <FieldLabel label="Đơn vị công tác" htmlFor="workplace" />
-              <TextField
-                className="w-full"
-                id="workplace"
-                placeholder="Đơn vị công tác"
-                variant="outlined"
-                {...register('workplace')}
-              />
-              <FieldErrorMsg msg={errors.workplace?.message} />
-            </div>
-            <div className="input-group">
-              <FieldLabel label="Địa chỉ hiện tại" htmlFor="current_address" />
-              <TextField
-                className="w-full"
-                id="current_address"
-                placeholder="Địa chỉ hiện tại"
-                variant="outlined"
-                {...register('current_address')}
-              />
-              <FieldErrorMsg msg={errors.current_address?.message} />
-            </div>
+            <InputTextField
+              label="Nghề nghiệp"
+              control={control}
+              name="career"
+              errorMsg={errors.career?.message}
+            />
+            <InputTextField
+              label="Đơn vị công tác"
+              control={control}
+              name="workplace"
+              errorMsg={errors.workplace?.message}
+            />
+            <InputTextField
+              label="Địa chỉ hiện tại"
+              control={control}
+              name="current_address"
+              errorMsg={errors.current_address?.message}
+            />
           </div>
           <Typography variant="h6">2. Thông tin đăng ký tiêm chủng</Typography>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="input-group">
-              <FieldLabel
-                label="Ngày muốn được tiêm (dự kiến)"
-                required={true}
-                htmlFor="injection_date"
-              />
-              <TextField
-                className="w-full"
-                id="injection_date"
-                type="date"
-                variant="outlined"
-                {...register('injection_date')}
-              />
-              <FieldErrorMsg msg={errors.injection_date?.message} />
-            </div>
+            <InputTextField
+              label="Ngày muốn được tiêm (dự kiến)"
+              control={control}
+              type="date"
+              name="injection_date"
+              required={true}
+              errorMsg={errors.injection_date?.message}
+            />
             <SelectField
               list={dayPhases}
               label="Buổi tiêm mong muốn"
