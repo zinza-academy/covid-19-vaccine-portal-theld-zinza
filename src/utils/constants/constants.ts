@@ -104,3 +104,8 @@ export const priorities = [
 ];
 
 export const injectRegistrationSteps = ['Thông tin cá nhân', 'Phiếu đăng ký tiêm', 'Hoàn thành'];
+
+export const role = {
+  user: 0,
+  admin: 1,
+};

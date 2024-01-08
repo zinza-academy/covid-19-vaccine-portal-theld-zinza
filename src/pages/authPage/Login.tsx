@@ -1,13 +1,14 @@
-import { TextField, Typography } from '@mui/material';
+import { Stack, Typography } from '@mui/material';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import LoadingButton from '@mui/lab/LoadingButton';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import styled from '@emotion/styled';
-import { useState } from 'react';
-import FieldErrorMsg from '../../components/base/FieldErrorMsg';
-import FieldLabel from '../../components/base/FieldLabel';
+import useAuthApi from '../../hooks/UseAuth';
+import { useAppDispatch } from '../../store';
+import { loginAuthUser } from '../../store/slices/authSlice';
+import InputTextField from '../../components/base/InputTextField';
 
 const LoadingBtn = styled(LoadingButton)`
   background: #66bb6a;
@@ -37,8 +38,6 @@ const RegisterBtn = styled(Link)`
 `;
 
 function LoginPage() {
-  const [loading, setLoading] = useState(false);
-
   const formSchema = Yup.object().shape({
     email: Yup.string().required('Email không được bỏ trống').email('Email không hợp lệ'),
     password: Yup.string()
@@ -48,22 +47,28 @@ function LoginPage() {
   });
 
   type Payload = Yup.InferType<typeof formSchema>;
+  const useAuth = useAuthApi();
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const {
-    register,
+    control,
     handleSubmit,
     formState: { errors, isValid },
   } = useForm<Payload>({
+    defaultValues: {
+      email: '',
+      password: '',
+    },
     resolver: yupResolver(formSchema),
   });
 
-  const onSubmit: SubmitHandler<Payload> = (data) => {
-    console.log(data);
-    setLoading(true);
-
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+  const onSubmit: SubmitHandler<Payload> = async (data) => {
+    const user = await useAuth.login.mutateAsync(data);
+    if (user) {
+      dispatch(loginAuthUser(user));
+      navigate('/');
+    }
   };
 
   return (
@@ -80,30 +85,23 @@ function LoginPage() {
             Đăng nhập vào tài khoản
           </Typography>
           <div className="form-group my-6">
-            <div className="input-group mb-4">
-              <FieldLabel label="Email" htmlFor="email" />
-              <TextField
-                className="w-full"
-                id="email"
-                placeholder="Email"
-                variant="outlined"
-                {...register('email')}
+            <Stack spacing={2}>
+              <InputTextField
+                label="Email"
+                control={control}
+                name="email"
+                required={true}
+                errorMsg={errors.email?.message}
               />
-              <FieldErrorMsg msg={errors.email?.message} />
-            </div>
-            <div className="input-group mb-4">
-              <FieldLabel label="Mật khẩu" htmlFor="password" />
-              <TextField
-                className="w-full"
-                id="password"
+              <InputTextField
+                label="Mật khẩu"
+                control={control}
                 type="password"
-                placeholder="Password"
-                variant="outlined"
-                {...register('password')}
-                error={!!errors.password}
+                name="password"
+                required={true}
+                errorMsg={errors.password?.message}
               />
-              <FieldErrorMsg msg={errors.password?.message} />
-            </div>
+            </Stack>
           </div>
           <div className="text-end text-[#3949ab]">
             <Link to="/auth/forgot-password">Quên mật khẩu?</Link>
@@ -113,7 +111,7 @@ function LoginPage() {
               variant="contained"
               type="submit"
               className="w-full"
-              loading={loading}
+              loading={useAuth.login.isPending}
               disabled={!isValid}>
               Đăng nhập
             </LoadingBtn>
