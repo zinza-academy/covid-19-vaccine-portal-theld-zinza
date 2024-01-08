@@ -1,0 +1,6 @@
+{
+  "nuxt.isNuxtApp": false,
+  "cSpell.words": [],
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "editor.formatOnSave": true
+}
