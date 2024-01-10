@@ -24,7 +24,6 @@ export const dayPhases = [
 ];
 
 export const VaccineRegistrationStatus = [
-  { value: 0, label: 'Chưa xử lý' },
   { value: 1, label: 'Chấp thuận' },
   { value: 2, label: 'Từ chối' },
 ];
@@ -108,4 +107,11 @@ export const injectRegistrationSteps = ['Thông tin cá nhân', 'Phiếu đăng 
 export const role = {
   user: 0,
   admin: 1,
+};
+
+export const injectStatus = {
+  pending: 0,
+  accept: 1,
+  reject: 2,
+  done: 3,
 };

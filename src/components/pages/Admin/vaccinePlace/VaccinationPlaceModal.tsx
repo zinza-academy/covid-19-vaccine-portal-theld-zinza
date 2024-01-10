@@ -1,17 +1,18 @@
 import { LoadingButton } from '@mui/lab';
 import { Box, Modal, Stack, Typography } from '@mui/material';
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import * as Yup from 'yup';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import InputTextField from '../../../base/InputTextField';
+import usePlaceApi from '../../../../hooks/UsePlace';
 
 interface VaccinationPlace {
   id: number;
   name: string;
   address: string;
-  manager_name: string;
-  table_number: number;
+  managerName: string;
+  tableAvailable: number;
 }
 
 interface Props {
@@ -32,19 +33,21 @@ const style = {
 };
 
 const VaccinationPlaceModal: FC<Props> = ({ open, modelData, handleClose, handleSubmitted }) => {
-  const [loading, setLoading] = useState(false);
+  const usePlace = usePlaceApi();
   const vaccinationPlaceSchema = Yup.object().shape({
     name: Yup.string().required('Địa điểm tiêm không được bỏ trống'),
     address: Yup.string().required('Địa chỉ không được để trống'),
-    manager_name: Yup.string().required('Người đứng đầu cơ sở không được để trống'),
-    table_number: Yup.number().required('Số bàn tiêm không được để trống'),
+    managerName: Yup.string().required('Người đứng đầu cơ sở không được để trống'),
+    tableAvailable: Yup.number().required('Số bàn tiêm không được để trống'),
   });
+
+  const formAction = modelData ? usePlace.update : usePlace.create;
 
   const defaultFormValues = {
     name: '',
     address: '',
-    manager_name: '',
-    table_number: 0,
+    managerName: '',
+    tableAvailable: 0,
   };
 
   type Payload = Yup.InferType<typeof vaccinationPlaceSchema>;
@@ -57,14 +60,12 @@ const VaccinationPlaceModal: FC<Props> = ({ open, modelData, handleClose, handle
     resolver: yupResolver(vaccinationPlaceSchema),
   });
 
-  const onSubmit: SubmitHandler<Payload> = (data) => {
-    console.log(modelData ? 'UPDATING' : 'CREATING', data);
-    setLoading(true);
+  const onSubmit: SubmitHandler<Payload> = async (data) => {
+    const result = await formAction.mutateAsync(data);
 
-    setTimeout(() => {
-      setLoading(false);
+    if (result) {
       handleSubmitted();
-    }, 1000);
+    }
   };
 
   return (
@@ -99,23 +100,23 @@ const VaccinationPlaceModal: FC<Props> = ({ open, modelData, handleClose, handle
               <InputTextField
                 label="Người đứng đầu cơ sở"
                 control={control}
-                name="manager_name"
+                name="managerName"
                 required={true}
-                errorMsg={errors.manager_name?.message}
+                errorMsg={errors.managerName?.message}
               />
               <InputTextField
                 type="number"
                 label="Số bàn tiêm"
                 control={control}
-                name="table_number"
+                name="tableAvailable"
                 required={true}
-                errorMsg={errors.table_number?.message}
+                errorMsg={errors.tableAvailable?.message}
               />
               <Stack direction="row" spacing={1} justifyContent={'right'}>
                 <LoadingButton onClick={handleClose} variant="outlined">
                   HỦY
                 </LoadingButton>
-                <LoadingButton loading={loading} type="submit" variant="contained">
+                <LoadingButton loading={formAction.isPending} type="submit" variant="contained">
                   XÁC NHẬN
                 </LoadingButton>
               </Stack>

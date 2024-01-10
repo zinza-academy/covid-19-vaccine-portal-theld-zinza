@@ -1,14 +1,18 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Stack } from '@mui/material';
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import InputTextField from '../../../base/InputTextField';
 import { LoadingButton } from '@mui/lab';
 import SearchIcon from '@mui/icons-material/Search';
+import { SearchFormData } from './AdminVaccineRegistration';
 
-const SearchRegistrationForm: FC = () => {
-  const [loading, setLoading] = useState(false);
+interface Props {
+  handleSearch: (searchData: SearchFormData) => void;
+}
+
+const SearchRegistrationForm: FC<Props> = ({ handleSearch }) => {
   const vaccinationPlaceSchema = Yup.object().shape({
     name: Yup.string(),
     person_number: Yup.string(),
@@ -28,16 +32,7 @@ const SearchRegistrationForm: FC = () => {
   });
 
   const onSubmit: SubmitHandler<Payload> = (data) => {
-    if (!data.name && !data.person_number) {
-      return;
-    }
-
-    console.log(data);
-    setLoading(true);
-
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+    handleSearch(data);
   };
 
   return (
@@ -64,11 +59,7 @@ const SearchRegistrationForm: FC = () => {
               errorMsg={errors.person_number?.message}
             />
           </div>
-          <LoadingButton
-            loading={loading}
-            type="submit"
-            variant="contained"
-            startIcon={<SearchIcon />}>
+          <LoadingButton type="submit" variant="contained" startIcon={<SearchIcon />}>
             TÌM KIẾM
           </LoadingButton>
         </Stack>
