@@ -6,26 +6,20 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
   tableCellClasses,
 } from '@mui/material';
 import styled from '@emotion/styled';
-import { FC } from 'react';
+import { ChangeEvent, FC, MouseEvent, useEffect, useState } from 'react';
 import { getLabelByValue } from '../../utils/helper';
-import { genderList } from '../../utils/constants/constants';
-
-interface vaccinationRecord {
-  id: number;
-  name: string;
-  birthday: string;
-  gender: number;
-  person_id: string;
-  status: number;
-}
-
-interface statusValueProp {
-  value: number;
-}
+import { dayPhases } from '../../utils/constants/constants';
+import useRegistrationApi from '../../hooks/useRegistration';
+import {
+  Status,
+  VaccineRegistration,
+} from '../../components/pages/Admin/vaccineRegistration/AdminVaccineRegistration';
+import { SearchFormData } from '../../components/pages/Admin/vaccinePlace/AdminVaccinationPlace';
 
 const StyledTableCell = styled(TableCell)(() => ({
   [`&.${tableCellClasses.body}`]: {
@@ -39,38 +33,53 @@ const StyledTableRow = styled(TableRow)(() => ({
   },
 }));
 
-const Status: FC<statusValueProp> = ({ value }) => {
-  return (
-    <div className="font-bold leading-6">
-      {value === 0 && (
-        <p className="bg-red-100 border rounded-lg border-red-600">Đăng ký thất bại</p>
-      )}
-      {value === 1 && (
-        <p className="bg-blue-100 border rounded-lg border-blue-600">Đăng ký thành công</p>
-      )}
-    </div>
-  );
-};
+interface ListPagination {
+  total: number;
+  items: VaccineRegistration[];
+}
 
 const VaccineRegistrations: FC = () => {
-  const data: vaccinationRecord[] = [
-    {
-      id: 1,
-      name: 'Nguyễn Văn A',
-      birthday: '2022-12-12',
-      gender: 1,
-      person_id: '123123123123',
-      status: 1,
-    },
-    {
-      id: 2,
-      name: 'Nguyễn Văn A',
-      birthday: '2022-12-13',
-      gender: 1,
-      person_id: '123123123123',
-      status: 0,
-    },
-  ];
+  const [data, setData] = useState<ListPagination>();
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [searchName, setSearchName] = useState('');
+  const [searchAddress, setSearchAddress] = useState('');
+  const useRegistration = useRegistrationApi();
+
+  const handleSearch = async (searchData?: SearchFormData) => {
+    const payload = {
+      page: page,
+      limit: rowsPerPage,
+      name: searchName,
+      address: searchAddress,
+    };
+
+    if (searchData) {
+      setPage(0);
+      setSearchName(searchData.name || '');
+      setSearchAddress(searchData.address || '');
+
+      payload.page = 0;
+      payload.name = searchData.name || '';
+      payload.address = searchData.address || '';
+    }
+
+    const list = await useRegistration.searchForUser.mutateAsync(payload);
+    setData(list);
+  };
+
+  useEffect(() => {
+    handleSearch();
+  }, [page, rowsPerPage]);
+
+  const handleChangePage = (event: MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   return (
     <Box
@@ -85,24 +94,24 @@ const VaccineRegistrations: FC = () => {
                 <TableRow>
                   <TableCell>STT</TableCell>
                   <TableCell align="center">Họ và tên</TableCell>
-                  <TableCell align="center">Ngày sinh</TableCell>
-                  <TableCell align="center">Giới tính</TableCell>
                   <TableCell align="center">Số CMND/CCCD/Mã định danh công dân</TableCell>
+                  <TableCell align="center">Ngày tiêm mong muốn</TableCell>
+                  <TableCell align="center">Buổi tiêm mong muốn</TableCell>
                   <TableCell align="center">Trạng thái</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {data.map((row, index) => (
+                {data?.items?.map((row, index) => (
                   <StyledTableRow key={row.id}>
                     <StyledTableCell component="th" scope="row">
-                      {index + 1}
+                      {page * rowsPerPage + index + 1}
                     </StyledTableCell>
-                    <StyledTableCell align="center">{row.name}</StyledTableCell>
-                    <StyledTableCell align="center">{row.birthday}</StyledTableCell>
+                    <StyledTableCell align="center">{row.user.fullName}</StyledTableCell>
+                    <StyledTableCell align="center">{row.user.citizenCode}</StyledTableCell>
+                    <StyledTableCell align="center">{row.injectionDate}</StyledTableCell>
                     <StyledTableCell align="center">
-                      {getLabelByValue(row.gender, genderList)}
+                      {getLabelByValue(row.injectionPhase, dayPhases)}
                     </StyledTableCell>
-                    <StyledTableCell align="center">{row.person_id}</StyledTableCell>
                     <StyledTableCell align="center">
                       <Status value={row.status} />
                     </StyledTableCell>
@@ -110,6 +119,14 @@ const VaccineRegistrations: FC = () => {
                 ))}
               </TableBody>
             </Table>
+            <TablePagination
+              component="div"
+              count={data?.total || 0}
+              page={page}
+              onPageChange={handleChangePage}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
           </TableContainer>
         </div>
       </Container>

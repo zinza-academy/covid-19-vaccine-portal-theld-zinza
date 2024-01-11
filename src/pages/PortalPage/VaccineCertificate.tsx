@@ -11,34 +11,21 @@ import {
   Typography,
   tableCellClasses,
 } from '@mui/material';
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 import logo2 from '../../assets/img/logo2.png';
 import qrCode from '../../assets/img/qr-code.png';
 import { Person, DateRange, FeaturedVideo } from '@mui/icons-material';
 import styled from '@emotion/styled';
-
-interface vaccinationRecord {
-  id: number;
-  index: number;
-  injectionTime: string;
-  vaccineType: string;
-  batchNumber: string;
-  place: string;
-}
-
-interface dataProp {
-  name: string;
-  birthday: string;
-  person_id: string;
-  insurance_number: string;
-  conclusion: string;
-  address: string;
-  vaccinationRecords: vaccinationRecord[];
-}
+import useRegistrationApi, { RegistrationItem } from '../../hooks/useRegistration';
+import { AuthEntity } from '../../store/slices/authSlice';
+import { injectStatus } from '../../utils/constants/constants';
+import usePlaceApi from '../../hooks/UsePlace';
+import { VaccinationPlace } from '../../components/pages/Admin/vaccinePlace/AdminVaccinationPlace';
+import { getLabelByValue } from '../../utils/helper';
 
 interface DetailItemProp {
   title: string;
-  value: string | number;
+  value?: string | number;
 }
 
 const StyledTableCell = styled(TableCell)(() => ({
@@ -63,32 +50,31 @@ const DetailItem: FC<DetailItemProp> = ({ title, value }) => {
 };
 
 const VaccineCertificate: FC = () => {
-  const data: dataProp = {
-    name: 'Nguyễn Văn A',
-    birthday: '12/12/1990',
-    person_id: '123123123123',
-    insurance_number: '123321123321',
-    conclusion: 'Đã được tiêm phòng vắc xin phòng bệnh Covid-19    ',
-    address: 'Phường Giang Biên - Quận Long Biên - Thành phố Hà Nội',
-    vaccinationRecords: [
-      {
-        id: 1,
-        index: 1,
-        injectionTime: '2022-12-12 19:00:00',
-        vaccineType: 'COVID-19 Vaccine AstraZeneca',
-        batchNumber: 'NJ0342',
-        place: 'TYT Dịch Vọng Hậu',
-      },
-      {
-        id: 2,
-        index: 2,
-        injectionTime: '2022-12-12 19:00:00',
-        vaccineType: 'COVID-19 Vaccine AstraZeneca',
-        batchNumber: 'NJ0342',
-        place: 'TYT Dịch Vọng Hậu',
-      },
-    ],
+  const [data, setData] = useState<AuthEntity>();
+  const useRegistration = useRegistrationApi();
+  const [vaccinePlaces, setVaccinePlaces] = useState<VaccinationPlace[]>([]);
+  const usePlace = usePlaceApi();
+
+  const handleGetCertificate = async () => {
+    const result = await useRegistration.getCertificate.mutateAsync();
+    setData(result);
   };
+
+  const getAllPlace = async () => {
+    const result = await usePlace.getAll();
+    setVaccinePlaces(result);
+  };
+
+  useEffect(() => {
+    handleGetCertificate();
+    getAllPlace();
+  }, []);
+
+  const listPlaces = vaccinePlaces.map((place) => {
+    return { label: place.name, value: place.id };
+  });
+
+  const listInjected = data?.registrations?.filter((item) => item.status === injectStatus.done);
 
   return (
     <Box
@@ -128,13 +114,24 @@ const VaccineCertificate: FC = () => {
             </div>
             <Stack spacing={2}>
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <DetailItem title="Họ và tên" value={data.name} />
-                <DetailItem title="Ngày sinh" value={data.birthday} />
-                <DetailItem title="Số CMND/CCCD" value={data.person_id} />
-                <DetailItem title="Số thẻ BHYT" value={data.insurance_number} />
+                <DetailItem title="Họ và tên" value={data?.fullName} />
+                <DetailItem title="Ngày sinh" value={data?.birthday} />
+                <DetailItem title="Số CMND/CCCD" value={data?.citizenCode} />
+                <DetailItem
+                  title="Số thẻ BHYT"
+                  value={listInjected?.[listInjected?.length - 1]?.insuranceCode}
+                />
               </div>
-              <DetailItem title="Địa chỉ" value={data.address} />
-              <DetailItem title="Kết luận" value={data.conclusion} />
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <DetailItem title="Tỉnh/Thành phố" value={data?.ward?.district?.province?.name} />
+                <DetailItem title="Quận/Huyện" value={data?.ward?.district?.name} />
+                <DetailItem title="Xã/Phường" value={data?.ward?.name} />
+              </div>
+
+              <DetailItem
+                title="Kết luận"
+                value={listInjected?.length ? 'Đã tiêm chủng' : 'Chưa tiêm chủng'}
+              />
             </Stack>
             <TableContainer>
               <Table sx={{ minWidth: 700 }} aria-label="customized table">
@@ -148,15 +145,19 @@ const VaccineCertificate: FC = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {data.vaccinationRecords.map((row) => (
+                  {listInjected?.map((row: RegistrationItem, index) => (
                     <StyledTableRow key={row.id}>
                       <StyledTableCell component="th" scope="row">
-                        {row.index}
+                        {index + 1}
                       </StyledTableCell>
-                      <StyledTableCell align="center">{row.injectionTime}</StyledTableCell>
-                      <StyledTableCell align="center">{row.vaccineType}</StyledTableCell>
-                      <StyledTableCell align="center">{row.batchNumber}</StyledTableCell>
-                      <StyledTableCell align="center">{row.place}</StyledTableCell>
+                      <StyledTableCell align="center">{row.injectedDate}</StyledTableCell>
+                      <StyledTableCell align="center">{row.vaccineType?.name}</StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.vaccineType?.batchNumber}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {getLabelByValue(row.vaccinationPlaceId, listPlaces)}
+                      </StyledTableCell>
                     </StyledTableRow>
                   ))}
                 </TableBody>
@@ -166,7 +167,7 @@ const VaccineCertificate: FC = () => {
           <div className="w-full h-full flex lg:w-3/12 justify-center my-6 lg:my-none">
             <div
               className={`${
-                data.vaccinationRecords.length >= 2 ? 'bg-green-600' : 'bg-yellow-500'
+                listInjected && listInjected?.length >= 2 ? 'bg-green-600' : 'bg-yellow-500'
               } bg-green-600 p-6 rounded-lg rounded-bl-none`}>
               <Stack spacing={2}>
                 <img src={logo2} width={100} alt="logo" className="place-self-center" />
@@ -179,21 +180,21 @@ const VaccineCertificate: FC = () => {
                     marginY: '24px',
                     color: 'white',
                   }}>
-                  ĐÃ TIÊM {data.vaccinationRecords.length} MŨI VẮC XIN
+                  ĐÃ TIÊM {listInjected?.length} MŨI VẮC XIN
                 </Typography>
                 <img src={qrCode} width={196} alt="logo" className="place-self-center" />
                 <div className="bg-white rounded-lg rounded-bl-none p-4">
                   <div className="flex gap-2">
                     <Person />
-                    <DetailItem title="Họ và tên" value={data.name} />
+                    <DetailItem title="Họ và tên" value={data?.fullName} />
                   </div>
                   <div className="flex gap-2 my-4">
                     <DateRange />
-                    <DetailItem title="Ngày sinh" value={data.birthday} />
+                    <DetailItem title="Ngày sinh" value={data?.birthday} />
                   </div>
                   <div className="flex gap-2">
                     <FeaturedVideo />
-                    <DetailItem title="Số CMND/CCCD" value={data.person_id} />
+                    <DetailItem title="Số CMND/CCCD" value={data?.citizenCode} />
                   </div>
                 </div>
               </Stack>

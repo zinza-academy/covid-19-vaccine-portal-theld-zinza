@@ -4,13 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useEffect } from 'react';
-import useProvinces from '../../hooks/UseProvinces';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import LoadingButton from '@mui/lab/LoadingButton';
 import InputTextField from '../../components/base/InputTextField';
 import SelectField from '../../components/base/SelectField';
 import { genderList } from '../../utils/constants/constants';
 import useAuthApi from '../../hooks/UseAuth';
+import useProvinces from '../../hooks/UseProvinces';
 
 function RegisterPage() {
   const formSchema = Yup.object().shape({

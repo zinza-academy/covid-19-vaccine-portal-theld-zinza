@@ -1,15 +1,28 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { injectRegistrationSteps } from '../../utils/constants/constants';
 import { RootState } from '../store';
+import { AuthEntity } from './authSlice';
 
 export interface FormData {
   priority: number;
-  insurance_number?: string;
-  career?: string | undefined;
+  insuranceCode?: string;
+  job?: string | undefined;
   workplace?: string;
-  current_address?: string;
-  injection_date: string;
-  injection_phase: number;
+  address?: string;
+  injectionDate: string;
+  injectionPhase: number;
+}
+
+export interface ResultData {
+  id: number | string;
+  userId: number | string;
+  job: string;
+  workplace: string;
+  address: string;
+  insuranceCode: string;
+  injectionDate: string;
+  injectionPhase: number | string;
+  user: AuthEntity;
 }
 
 export interface formStepData {
@@ -19,12 +32,24 @@ export interface formStepData {
 
 const formState: FormData = {
   priority: -1,
-  insurance_number: '',
-  career: '',
+  insuranceCode: '',
+  job: '',
   workplace: '',
-  current_address: '',
-  injection_date: '',
-  injection_phase: -1,
+  address: '',
+  injectionDate: '',
+  injectionPhase: -1,
+};
+
+const resultState: ResultData = {
+  id: '',
+  userId: '',
+  job: '',
+  workplace: '',
+  address: '',
+  insuranceCode: '',
+  injectionDate: '',
+  injectionPhase: '',
+  user: {},
 };
 
 const formStep: formStepData = {
@@ -32,37 +57,60 @@ const formStep: formStepData = {
   currentStep: 0,
 };
 
+const initialState = {
+  formData: formState,
+  resultData: resultState,
+  step: formStep,
+};
+
 export const injectRegistrationSlice = createSlice({
   name: 'injectRegistrationForm',
-  initialState: formState,
+  initialState,
   reducers: {
     updateForm: (state, action: PayloadAction<FormData>) => {
-      return { ...state, ...action.payload };
+      state.formData = { ...state.formData, ...action.payload };
     },
-    resetForm: () => {
-      return { ...formState };
+    resetForm: (state) => {
+      state.formData = { ...formState };
     },
-  },
-});
-
-export const formStepSlice = createSlice({
-  name: 'formStepState',
-  initialState: formStep,
-  reducers: {
+    updateResult: (state, action: PayloadAction<ResultData>) => {
+      state.resultData = { ...state.resultData, ...action.payload };
+    },
+    resetResult: (state) => {
+      state.resultData = { ...resultState };
+    },
     setSteps: (state, action: PayloadAction<string[]>) => {
-      state.steps = action.payload;
+      state.step.steps = action.payload;
+    },
+    setCurrentStep: (state, action: PayloadAction<number>) => {
+      state.step.currentStep = action.payload;
     },
     incrementStep: (state) => {
-      state.currentStep =
-        state.currentStep == state.steps.length - 1 ? state.currentStep : state.currentStep + 1;
+      state.step.currentStep =
+        state.step.currentStep == state.step.steps.length - 1
+          ? state.step.currentStep
+          : state.step.currentStep + 1;
     },
     decrementStep: (state) => {
-      state.currentStep = state.currentStep <= 0 ? state.currentStep : state.currentStep - 1;
+      state.step.currentStep =
+        state.step.currentStep <= 0 ? state.step.currentStep : state.step.currentStep - 1;
     },
   },
 });
 
-export const { updateForm, resetForm } = injectRegistrationSlice.actions;
-export const { setSteps, incrementStep, decrementStep } = formStepSlice.actions;
+export const {
+  updateForm,
+  resetForm,
+  updateResult,
+  resetResult,
+  setSteps,
+  setCurrentStep,
+  incrementStep,
+  decrementStep,
+} = injectRegistrationSlice.actions;
 
-export const injectRegistrationFormData = (state: RootState) => state.injectRegistrationForm;
+export const injectRegistrationFormData = (state: RootState) =>
+  state.injectRegistrationForm.formData;
+export const injectRegistrationResult = (state: RootState) =>
+  state.injectRegistrationForm.resultData;
+export const formStepState = (state: RootState) => state.injectRegistrationForm.step;

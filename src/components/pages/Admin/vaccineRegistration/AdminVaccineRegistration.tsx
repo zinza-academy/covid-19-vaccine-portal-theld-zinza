@@ -20,6 +20,8 @@ import { getLabelByValue } from '../../../../utils/helper';
 import { dayPhases, injectStatus } from '../../../../utils/constants/constants';
 import usePlaceApi from '../../../../hooks/UsePlace';
 import { VaccinationPlace } from '../vaccinePlace/AdminVaccinationPlace';
+import { VaccineType } from '../vaccineType/AdminVaccineType';
+import useTypeApi from '../../../../hooks/UseType';
 
 const StyledTableCell = styled(TableCell)(() => ({
   [`&.${tableCellClasses.body}`]: {
@@ -91,8 +93,10 @@ const AdminVaccineRegistration: FC = () => {
   const [searchName, setSearchName] = useState('');
   const [searchAddress, setSearchAddress] = useState('');
   const [vaccinePlaces, setVaccinePlaces] = useState<VaccinationPlace[]>([]);
+  const [vaccineTypes, setVaccineTypes] = useState<VaccineType[]>([]);
   const useRegistration = useRegistrationApi();
   const usePlace = usePlaceApi();
+  const useType = useTypeApi();
 
   const handleSearch = async (searchData?: SearchFormData) => {
     const payload = {
@@ -125,8 +129,14 @@ const AdminVaccineRegistration: FC = () => {
     setVaccinePlaces(result);
   };
 
+  const getAllType = async () => {
+    const result = await useType.getAll();
+    setVaccineTypes(result);
+  };
+
   useEffect(() => {
     getAllPlace();
+    getAllType();
   }, []);
 
   const handleShowEditModal = (item?: VaccineRegistration) => {
@@ -212,6 +222,7 @@ const AdminVaccineRegistration: FC = () => {
           handleClose={handleCloseModal}
           handleSubmitted={handleReloadData}
           vaccinePlaces={vaccinePlaces}
+          vaccineTypes={vaccineTypes}
         />
       )}
     </Box>

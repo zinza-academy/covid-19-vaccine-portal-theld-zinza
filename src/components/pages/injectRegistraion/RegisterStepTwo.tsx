@@ -4,9 +4,14 @@ import NavigationButton from './NavigationButton';
 import ShieldImage from '../../../assets/img/shield.png';
 import VacineImage from '../../../assets/img/vaccine2.png';
 import HospitalImage from '../../../assets/img/hospital.png';
-import { incrementStep } from '../../../store/slices/injectRegistrationSlice';
-import { RootState, useAppDispatch } from '../../../store';
-import { useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../../store';
+import {} from 'react-redux';
+import useRegistrationApi from '../../../hooks/useRegistration';
+import {
+  incrementStep,
+  injectRegistrationFormData,
+  updateResult,
+} from '../../../store/slices/injectRegistrationSlice';
 
 const RegisterStepTwo: FC = () => {
   const guide = [
@@ -25,22 +30,20 @@ const RegisterStepTwo: FC = () => {
   ];
 
   const dispatch = useAppDispatch();
-  const [loading, setLoading] = useState(false);
   const [isAgree, setIsAgree] = useState(false);
-  const formData = useSelector((state: RootState) => state.injectRegistrationForm);
+  const formData = useAppSelector(injectRegistrationFormData);
+  const useRegistration = useRegistrationApi();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setIsAgree(event.target.checked);
   };
 
-  const handleRegister = () => {
-    setLoading(true);
-    setTimeout(() => {
-      console.log(formData);
-
-      setLoading(false);
-      dispatch(incrementStep());
-    }, 1000);
+  const handleRegister = async () => {
+    const result = await useRegistration.create.mutateAsync(formData);
+    if (result) {
+      dispatch(updateResult(result));
+    }
+    dispatch(incrementStep());
   };
 
   return (
@@ -69,7 +72,11 @@ const RegisterStepTwo: FC = () => {
           />
         </div>
       </Stack>
-      <NavigationButton disabledNext={!isAgree} loading={loading} handleNextStep={handleRegister} />
+      <NavigationButton
+        disabledNext={!isAgree}
+        loading={useRegistration.create.isPending}
+        handleNextStep={handleRegister}
+      />
     </Box>
   );
 };

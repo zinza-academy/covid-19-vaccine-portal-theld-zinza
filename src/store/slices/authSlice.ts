@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../store';
+import { Ward } from '../../hooks/UseProvinces';
+import { RegistrationItem } from '../../hooks/useRegistration';
 
 export interface AuthEntity {
   id?: number | string;
@@ -10,6 +12,8 @@ export interface AuthEntity {
   gender?: number | string;
   wardId?: number | string;
   role?: number | string;
+  ward?: Ward;
+  registrations?: RegistrationItem[];
 }
 
 const initialState: AuthEntity = {

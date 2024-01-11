@@ -20,14 +20,14 @@ const RegisterStepOne: FC = () => {
     priority: Yup.number()
       .min(0, 'Nhóm ưu tiên không được để trống')
       .required('Nhóm ưu tiên không được để trống'),
-    insurance_number: Yup.string(),
-    career: Yup.string(),
+    insuranceCode: Yup.string(),
+    job: Yup.string(),
     workplace: Yup.string(),
-    current_address: Yup.string(),
-    injection_date: Yup.string()
+    address: Yup.string(),
+    injectionDate: Yup.string()
       .typeError('Ngày tiêm không được để trống')
       .required('Ngày tiêm không được để trống'),
-    injection_phase: Yup.number()
+    injectionPhase: Yup.number()
       .min(0, 'Buổi tiêm không được để trống')
       .required('Buổi tiêm không được để trống'),
   });
@@ -68,16 +68,16 @@ const RegisterStepOne: FC = () => {
             <InputTextField
               label="Số thẻ BHYT"
               control={control}
-              name="insurance_number"
-              errorMsg={errors.insurance_number?.message}
+              name="insuranceCode"
+              errorMsg={errors.insuranceCode?.message}
             />
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <InputTextField
               label="Nghề nghiệp"
               control={control}
-              name="career"
-              errorMsg={errors.career?.message}
+              name="job"
+              errorMsg={errors.job?.message}
             />
             <InputTextField
               label="Đơn vị công tác"
@@ -88,8 +88,8 @@ const RegisterStepOne: FC = () => {
             <InputTextField
               label="Địa chỉ hiện tại"
               control={control}
-              name="current_address"
-              errorMsg={errors.current_address?.message}
+              name="address"
+              errorMsg={errors.address?.message}
             />
           </div>
           <Typography variant="h6">2. Thông tin đăng ký tiêm chủng</Typography>
@@ -98,17 +98,17 @@ const RegisterStepOne: FC = () => {
               label="Ngày muốn được tiêm (dự kiến)"
               control={control}
               type="date"
-              name="injection_date"
+              name="injectionDate"
               required={true}
-              errorMsg={errors.injection_date?.message}
+              errorMsg={errors.injectionDate?.message}
             />
             <SelectField
               list={dayPhases}
               label="Buổi tiêm mong muốn"
               control={control}
-              name="injection_phase"
+              name="injectionPhase"
               required={true}
-              errorMsg={errors.injection_phase?.message}
+              errorMsg={errors.injectionPhase?.message}
             />
           </div>
           <Typography variant="body1" className="text-red-700 text-bold">

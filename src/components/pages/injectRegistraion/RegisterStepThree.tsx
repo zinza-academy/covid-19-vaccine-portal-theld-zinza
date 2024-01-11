@@ -4,19 +4,8 @@ import { Link } from 'react-router-dom';
 import NavigationButton from './NavigationButton';
 import { getLabelByValue } from '../../../utils/helper';
 import { genderList } from '../../../utils/constants/constants';
-
-interface dataProp {
-  inject_id: string;
-  name: string;
-  birthday: string;
-  gender: number;
-  person_id: string;
-  insurance_number: string;
-  phone_number: string;
-  province: string;
-  district: string;
-  ward: string;
-}
+import { useAppSelector } from '../../../store';
+import { injectRegistrationResult } from '../../../store/slices/injectRegistrationSlice';
 
 interface DetailItemProp {
   title: string;
@@ -34,18 +23,7 @@ const DetailItem: FC<DetailItemProp> = ({ title, value }) => {
 
 const RegisterStepThree: FC = () => {
   const [loading, setLoading] = useState(false);
-  const data: dataProp = {
-    inject_id: '0120211103501237',
-    name: 'Nguyễn Văn A',
-    birthday: '12/12/1990',
-    gender: 1,
-    person_id: '123123123123',
-    insurance_number: '123321123321',
-    phone_number: '123321123321',
-    province: 'Hà Nội',
-    district: 'Quận Nam Từ Liêm',
-    ward: 'Phường Minh Khai',
-  };
+  const data = useAppSelector(injectRegistrationResult);
 
   const handleExport = () => {
     setLoading(true);
@@ -64,7 +42,7 @@ const RegisterStepThree: FC = () => {
             fontWeight: '700',
           }}>
           <span>Đăng ký tiêm chủng COVID-19 thành công. Mã đặt tiêm của bạn là</span>
-          <span className="text-red-600"> {data.inject_id}</span>
+          <span className="text-red-600"> {data.id}</span>
         </Typography>
         <Typography variant="body1" align="center">
           <span>
@@ -72,7 +50,7 @@ const RegisterStepThree: FC = () => {
             thu thập nhu cầu và thông tin để lập danh sách đối tượng đăng ký tiêm vắc xin COVID-19
             theo từng địa bàn. Chúng tôi sẽ liên hệ với quý khách theo số điện thoại
           </span>
-          <span className="text-blue-600"> {data.phone_number} </span>
+          <span className="text-blue-600"> {data?.user?.citizenCode} </span>
           <span>khi có kế hoạch tiêm trong thời gian sớm nhất.</span>
         </Typography>
         <Typography variant="body1" align="center">
@@ -83,18 +61,18 @@ const RegisterStepThree: FC = () => {
           <span>để theo dõi kết quả đăng ký tiêm và nhận chứng nhận tiêm chủng COVID-19</span>
         </Typography>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
-          <DetailItem title="Họ và tên" value={data.name} />
-          <DetailItem title="Ngày sinh" value={data.birthday} />
-          <DetailItem title="Giới tính" value={getLabelByValue(data.gender, genderList)} />
+          <DetailItem title="Họ và tên" value={data?.user?.fullName} />
+          <DetailItem title="Ngày sinh" value={data?.user?.birthday} />
+          <DetailItem title="Giới tính" value={getLabelByValue(data?.user?.gender, genderList)} />
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <DetailItem title="Số CMND/CCCD/Mã định danh công dân" value={data.person_id} />
-          <DetailItem title="Số thẻ BHYT" value={data.insurance_number} />
+          <DetailItem title="Số CMND/CCCD/Mã định danh công dân" value={data?.user?.citizenCode} />
+          <DetailItem title="Số thẻ BHYT" value={data.insuranceCode} />
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <DetailItem title="Tỉnh/Thành phố" value={data.province} />
-          <DetailItem title="Quận/Huyện" value={data.district} />
-          <DetailItem title="Xã/Phường" value={data.ward} />
+          <DetailItem title="Tỉnh/Thành phố" value={data?.user?.ward?.district?.province?.name} />
+          <DetailItem title="Quận/Huyện" value={data?.user?.ward?.district?.name} />
+          <DetailItem title="Xã/Phường" value={data?.user?.ward?.name} />
         </div>
       </Stack>
       <NavigationButton loading={loading} handleNextStep={handleExport} />

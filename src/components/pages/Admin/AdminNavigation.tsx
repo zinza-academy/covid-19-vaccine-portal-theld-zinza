@@ -17,6 +17,10 @@ function AdminNavigation() {
       label: 'Đăng ký',
     },
     {
+      path: '/admin/vaccine-type',
+      label: 'Loại vaccine',
+    },
+    {
       path: '/admin/documents',
       label: 'Tài liệu',
     },

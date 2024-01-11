@@ -3,9 +3,14 @@ import { LoadingButton } from '@mui/lab';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../../store';
 import { useAppDispatch } from '../../../store/hooks';
-import { decrementStep } from '../../../store/slices/injectRegistrationSlice';
+import {
+  decrementStep,
+  formStepState,
+  resetForm,
+  resetResult,
+  setCurrentStep,
+} from '../../../store/slices/injectRegistrationSlice';
 import { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -48,11 +53,17 @@ const LoadingBtn = styled(LoadingButton)`
 const NavigationButton: FC<Props> = ({ handleNextStep, disabledNext, loading }) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const currentStep = useSelector((state: RootState) => state.formStepState.currentStep);
-  const steps = useSelector((state: RootState) => state.formStepState.steps);
+  const { currentStep, steps } = useSelector(formStepState);
 
   const handleBackStep = () => {
     if (currentStep === 0) {
+      navigate('/');
+    }
+
+    if (currentStep === steps.length - 1) {
+      dispatch(resetForm());
+      dispatch(resetResult());
+      dispatch(setCurrentStep(0));
       navigate('/');
     }
 

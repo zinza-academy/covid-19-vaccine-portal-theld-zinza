@@ -16,6 +16,7 @@ import { Status, VaccineRegistration } from './AdminVaccineRegistration';
 import useRegistrationApi from '../../../../hooks/useRegistration';
 import { VaccinationPlace } from '../vaccinePlace/AdminVaccinationPlace';
 import InputTextField from '../../../base/InputTextField';
+import { VaccineType } from '../vaccineType/AdminVaccineType';
 
 interface Props {
   open: boolean;
@@ -23,6 +24,7 @@ interface Props {
   handleClose: () => void;
   handleSubmitted: () => void;
   vaccinePlaces: VaccinationPlace[];
+  vaccineTypes: VaccineType[];
 }
 
 const style = {
@@ -59,10 +61,12 @@ const VaccineRegistrationModal: FC<Props> = ({
   handleClose,
   handleSubmitted,
   vaccinePlaces,
+  vaccineTypes,
 }) => {
   const formSchema = Yup.object().shape({
     status: Yup.number().required('Nhóm ưu tiên không được để trống'),
     vaccinationPlaceId: Yup.number().nullable(),
+    vaccineTypeId: Yup.number().nullable(),
     injectedDate: Yup.string().nullable(),
   });
 
@@ -83,6 +87,9 @@ const VaccineRegistrationModal: FC<Props> = ({
   const useRegistration = useRegistrationApi();
   const listPlaces = vaccinePlaces.map((place) => {
     return { label: place.name, value: place.id };
+  });
+  const listTypes = vaccineTypes.map((type) => {
+    return { label: type.name, value: type.id };
   });
 
   watch('status');
@@ -151,6 +158,10 @@ const VaccineRegistrationModal: FC<Props> = ({
                     title="Điểm tiêm"
                     value={getLabelByValue(modelData?.vaccinationPlaceId, listPlaces)}
                   />
+                  <DetailItem
+                    title="Loại vaccine"
+                    value={getLabelByValue(modelData?.vaccinationPlaceId, listTypes)}
+                  />
                 </>
               )}
               {modelData?.status == injectStatus.pending && (
@@ -172,6 +183,14 @@ const VaccineRegistrationModal: FC<Props> = ({
                     name="vaccinationPlaceId"
                     required={true}
                     errorMsg={errors.vaccinationPlaceId?.message}
+                  />
+                  <SelectField
+                    list={listTypes}
+                    label="Loại vaccine"
+                    control={control}
+                    name="vaccineTypeId"
+                    required={true}
+                    errorMsg={errors.vaccineTypeId?.message}
                   />
                   <InputTextField
                     label="Ngày tiêm"

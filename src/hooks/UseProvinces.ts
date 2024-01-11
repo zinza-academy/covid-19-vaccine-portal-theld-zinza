@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
+import api from './api';
 
 interface SelectionObject {
   value: string | number | undefined;
@@ -7,68 +7,43 @@ interface SelectionObject {
 }
 
 interface Province {
+  id: number;
   name: string;
-  code: number;
-  division_type: string;
-  codename: string;
-  phone_code: number;
 }
 
 interface District {
+  id: number;
   name: string;
-  code: number;
-  division_type: string;
-  codename: string;
-  province_code: number;
+  provinceId: number;
+  province?: Province;
 }
 
-interface Ward {
+export interface Ward {
+  id: number;
   name: string;
-  code: number;
-  division_type: string;
-  codename: string;
-  district_code: number;
-}
-
-interface ProvinceList extends Province {
-  name: string;
-  code: number;
-  division_type: string;
-  codename: string;
-  phone_code: number;
-  districts: District[];
-}
-
-interface DistrictList extends Province {
-  name: string;
-  code: number;
-  division_type: string;
-  codename: string;
-  phone_code: number;
-  wards: Ward[];
+  districtId: number;
+  district?: District;
 }
 
 const useProvinces = (province_code?: string | number, district_code?: string | number) => {
-  const provinces = useQuery<ProvinceList[]>({
+  const provinces = useQuery<Province[]>({
     queryKey: ['province'],
     queryFn: async () => {
       try {
-        const response = await axios.get('https://provinces.open-api.vn/api/p/');
-        return response.data;
+        const response = await api.get('/address');
+        return response.data?.data;
       } catch (error) {
         return [];
       }
     },
   });
 
-  const districts = useQuery<DistrictList[]>({
+  const districts = useQuery<District[]>({
     enabled: !!province_code,
     queryKey: ['district', province_code],
     queryFn: async () => {
       try {
-        return await axios
-          .get(`https://provinces.open-api.vn/api/p/${province_code}?depth=2`)
-          .then((response) => response.data.districts);
+        return await api.get(`/address/p/${province_code}`).then((response) => response.data?.data);
       } catch (error) {
         return [];
       }
@@ -80,9 +55,7 @@ const useProvinces = (province_code?: string | number, district_code?: string | 
     queryKey: ['district', district_code],
     queryFn: async () => {
       try {
-        return await axios
-          .get(`https://provinces.open-api.vn/api/d/${district_code}?depth=2`)
-          .then((response) => response.data.wards);
+        return await api.get(`/address/d/${district_code}`).then((response) => response.data?.data);
       } catch (error) {
         return [];
       }
@@ -90,33 +63,33 @@ const useProvinces = (province_code?: string | number, district_code?: string | 
   });
 
   const listProvinces = (): SelectionObject[] => {
-    return provinces.data
+    return provinces.data?.length
       ? provinces.data.map((item) => {
           return {
             label: item.name,
-            value: item.code,
+            value: item.id,
           };
         })
       : [];
   };
 
   const listDistricts = (): SelectionObject[] => {
-    return districts.data
+    return districts.data?.length
       ? districts.data.map((item) => {
           return {
             label: item.name,
-            value: item.code,
+            value: item.id,
           };
         })
       : [];
   };
 
   const listWards = (): SelectionObject[] => {
-    return wards.data
+    return wards.data?.length
       ? wards.data.map((item) => {
           return {
             label: item.name,
-            value: item.code,
+            value: item.id,
           };
         })
       : [];

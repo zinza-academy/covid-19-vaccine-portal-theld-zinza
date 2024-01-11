@@ -25,6 +25,7 @@ import api from './hooks/api';
 import { useDispatch } from 'react-redux';
 import { loginAuthUser } from './store/slices/authSlice';
 import { getCookie } from 'cookies-next';
+import AdminVaccineTypePage from './pages/adminPage/VaccineTypePage';
 
 function App() {
   const queryClient = new QueryClient();
@@ -81,6 +82,7 @@ function App() {
             <Route path="/admin" element={AdminGuard(<AdminLayout />)}>
               <Route path="/admin/vaccination-places" element={<AdminVaccinationPlacePage />} />
               <Route path="/admin/vaccine-registrations" element={<VaccineRegistrationPage />} />
+              <Route path="/admin/vaccine-type" element={<AdminVaccineTypePage />} />
               <Route path="/admin/documents" element={<DocumentPage />} />
             </Route>
           </Route>

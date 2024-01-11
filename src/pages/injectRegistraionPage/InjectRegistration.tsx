@@ -3,12 +3,12 @@ import StepBar from '../../components/pages/injectRegistraion/StepBar';
 import RegisterStepOne from '../../components/pages/injectRegistraion/RegisterStepOne';
 import RegisterStepTwo from '../../components/pages/injectRegistraion/RegisterStepTwo';
 import RegisterStepThree from '../../components/pages/injectRegistraion/RegisterStepThree';
-import { RootState } from '../../store';
 import { useSelector } from 'react-redux';
 import { injectRegistrationSteps } from '../../utils/constants/constants';
+import { formStepState } from '../../store/slices/injectRegistrationSlice';
 
 function InjectRegistration() {
-  const currentStep = useSelector((state: RootState) => state.formStepState.currentStep);
+  const { currentStep } = useSelector(formStepState);
 
   return (
     <Box
