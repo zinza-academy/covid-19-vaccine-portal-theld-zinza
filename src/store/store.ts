@@ -1,9 +1,11 @@
 import { configureStore, ThunkAction, Action, combineReducers } from '@reduxjs/toolkit';
 import { injectRegistrationSlice, formStepSlice } from './slices/injectRegistrationSlice';
+import { authSlice } from './slices/authSlice';
 
 const rootReducer = combineReducers({
   injectRegistrationForm: injectRegistrationSlice.reducer,
   formStepState: formStepSlice.reducer,
+  auth: authSlice.reducer,
 });
 
 export const store = configureStore({

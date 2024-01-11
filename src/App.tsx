@@ -16,34 +16,77 @@ import AdminVaccinationPlacePage from './pages/adminPage/VaccinationPlacePage';
 import VaccineRegistrationPage from './pages/adminPage/VaccineRegistrationPage';
 import DocumentPage from './pages/adminPage/DocumentPage';
 import ListDocument from './pages/PortalPage/ListDocumentPage';
+import { AdminGuard, AuthGuard, NotAuthGuard } from './utils/routeGuard';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useEffect, useState } from 'react';
+import api from './hooks/api';
+import { useDispatch } from 'react-redux';
+import { loginAuthUser } from './store/slices/authSlice';
+import { getCookie } from 'cookies-next';
 
 function App() {
+  const queryClient = new QueryClient();
+  const [initialized, setInitialized] = useState(false);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const fetchGetInfo = async () => {
+      if (!getCookie('access_token')) {
+        return setInitialized(true);
+      }
+
+      await api
+        .get('/auth/info')
+        .then((res) => {
+          const data = res.data?.data;
+
+          if (data) {
+            dispatch(loginAuthUser(data));
+          }
+
+          setInitialized(true);
+        })
+        .catch(() => {
+          setInitialized(true);
+        });
+    };
+
+    fetchGetInfo();
+  }, []);
+
+  initialized;
+
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="auth" element={<AuthLayout />}>
-          <Route path="login" element={<LoginPage />} />
-          <Route path="forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="register" element={<RegisterPage />} />
-        </Route>
-        <Route path="/" element={<DefaultLayout />}>
-          <Route path="" element={<HomePage />} />
-          <Route path="/injection-register" element={<InjectRegistration />} />
-          <Route path="/documents" element={<ListDocument />} />
-
-          <Route path="" element={<PortalLayout />}>
-            <Route path="/vaccine-certificate" element={<VaccineCertificate />} />
-            <Route path="/vaccine-registrations" element={<VaccineRegistrations />} />
-            <Route path="/user-info" element={<UserInfo />} />
+      <QueryClientProvider client={queryClient}>
+        <Routes>
+          <Route path="auth" element={NotAuthGuard(<AuthLayout />)}>
+            <Route path="login" element={<LoginPage />} />
+            <Route path="forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="register" element={<RegisterPage />} />
           </Route>
+          <Route path="/" element={<DefaultLayout />}>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/injection-register" element={AuthGuard(<InjectRegistration />)} />
+            <Route path="/documents" element={AuthGuard(<ListDocument />)} />
 
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route path="/admin/vaccination-places" element={<AdminVaccinationPlacePage />} />
-            <Route path="/admin/vaccine-registrations" element={<VaccineRegistrationPage />} />
-            <Route path="/admin/documents" element={<DocumentPage />} />
+            <Route path="" element={AuthGuard(<PortalLayout />)}>
+              <Route path="/vaccine-certificate" element={<VaccineCertificate />} />
+              <Route path="/vaccine-registrations" element={<VaccineRegistrations />} />
+              <Route path="/user-info" element={<UserInfo />} />
+            </Route>
+
+            <Route path="/admin" element={AdminGuard(<AdminLayout />)}>
+              <Route path="/admin/vaccination-places" element={<AdminVaccinationPlacePage />} />
+              <Route path="/admin/vaccine-registrations" element={<VaccineRegistrationPage />} />
+              <Route path="/admin/documents" element={<DocumentPage />} />
+            </Route>
           </Route>
-        </Route>
-      </Routes>
+        </Routes>
+      </QueryClientProvider>
+      <ToastContainer />
     </BrowserRouter>
   );
 }

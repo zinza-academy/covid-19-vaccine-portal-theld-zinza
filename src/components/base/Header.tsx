@@ -11,9 +11,14 @@ import {
 } from '@mui/material';
 import LogoImage from '../../assets/img/Logo.png';
 import { FC, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled';
 import { PeopleAlt, KeyboardArrowDown, ArrowForward } from '@mui/icons-material';
+import { useAppSelector } from '../../store';
+import { logoutAuthUser, selectAuthData } from '../../store/slices/authSlice';
+import useAuthApi from '../../hooks/UseAuth';
+import { useDispatch } from 'react-redux';
+import { role } from '../../utils/constants/constants';
 
 interface Props {
   label?: string;
@@ -38,12 +43,36 @@ const LoginBtn = styled(Link)`
 
 const Header: FC<Props> = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [anchorUser, setAnchorUser] = useState<null | HTMLElement>(null);
+  const openUser = Boolean(anchorUser);
   const open = Boolean(anchorEl);
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
+
+  const handleUserClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorUser(event.currentTarget);
+  };
+
   const handleClose = () => {
     setAnchorEl(null);
+    setAnchorUser(null);
+  };
+
+  const userData = useAppSelector(selectAuthData);
+  const useAuth = useAuthApi();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const isloggedIn = !!userData.id;
+  const isAdmin = userData.role == role.admin;
+
+  const handleLogout = async () => {
+    handleClose();
+    await useAuth.logout.mutateAsync();
+
+    dispatch(logoutAuthUser());
+    navigate('/');
   };
 
   return (
@@ -63,7 +92,7 @@ const Header: FC<Props> = () => {
               CỔNG THÔNG TIN TIÊM CHỦNG COVID-19
             </Typography>
             <List>
-              <ListItem disablePadding>
+              <ListItem disablePadding sx={{ minHeight: 52 }}>
                 <ListItemButton sx={{ textAlign: 'center' }}>
                   <Link to="/">Trang chủ</Link>
                 </ListItemButton>
@@ -79,9 +108,19 @@ const Header: FC<Props> = () => {
                 <ListItemButton sx={{ textAlign: 'center' }}>
                   <Link to="/documents">Tài liệu</Link>
                 </ListItemButton>
-                <ListItemButton sx={{ textAlign: 'center' }}>
-                  <LoginBtn to="/auth/login">Đăng nhập</LoginBtn>
-                </ListItemButton>
+                {isloggedIn && (
+                  <ListItemButton sx={{ textAlign: 'center' }}>
+                    <Typography onClick={handleUserClick}>
+                      <b>{`${userData.fullName} ${isAdmin ? '(admin)' : ''}`}</b>
+                      <KeyboardArrowDown />
+                    </Typography>
+                  </ListItemButton>
+                )}
+                {!isloggedIn && (
+                  <ListItemButton sx={{ textAlign: 'center' }}>
+                    <LoginBtn to="/auth/login">Đăng nhập</LoginBtn>
+                  </ListItemButton>
+                )}
               </ListItem>
             </List>
           </Toolbar>
@@ -119,6 +158,24 @@ const Header: FC<Props> = () => {
                 <ArrowForward className="text-blue-600" />
               </MenuItem>
             </Link>
+          </Menu>
+          <Menu
+            id="user-menu"
+            anchorEl={anchorUser}
+            open={openUser}
+            onClose={handleClose}
+            MenuListProps={{
+              'aria-labelledby': 'basic-button',
+            }}>
+            {isAdmin && (
+              <MenuItem onClick={handleClose}>
+                <Link to="/admin/vaccine-registrations">Trang quản trị</Link>
+              </MenuItem>
+            )}
+            <MenuItem onClick={handleClose}>
+              <Link to="/user-info">Tài khoản của tôi</Link>
+            </MenuItem>
+            <MenuItem onClick={handleLogout}>Đăng xuất</MenuItem>
           </Menu>
         </Container>
       </AppBar>

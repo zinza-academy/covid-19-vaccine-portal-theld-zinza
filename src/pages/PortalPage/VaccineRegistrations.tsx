@@ -11,7 +11,8 @@ import {
 } from '@mui/material';
 import styled from '@emotion/styled';
 import { FC } from 'react';
-import { ConvertGenderText } from '../../utils/helper';
+import { getLabelByValue } from '../../utils/helper';
+import { genderList } from '../../utils/constants/constants';
 
 interface vaccinationRecord {
   id: number;
@@ -99,7 +100,7 @@ const VaccineRegistrations: FC = () => {
                     <StyledTableCell align="center">{row.name}</StyledTableCell>
                     <StyledTableCell align="center">{row.birthday}</StyledTableCell>
                     <StyledTableCell align="center">
-                      {ConvertGenderText(row.gender)}
+                      {getLabelByValue(row.gender, genderList)}
                     </StyledTableCell>
                     <StyledTableCell align="center">{row.person_id}</StyledTableCell>
                     <StyledTableCell align="center">

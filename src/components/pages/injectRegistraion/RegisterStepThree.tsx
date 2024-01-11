@@ -2,7 +2,8 @@ import { Box, Stack, Typography } from '@mui/material';
 import { FC, useState } from 'react';
 import { Link } from 'react-router-dom';
 import NavigationButton from './NavigationButton';
-import { ConvertGenderText } from '../../../utils/helper';
+import { getLabelByValue } from '../../../utils/helper';
+import { genderList } from '../../../utils/constants/constants';
 
 interface dataProp {
   inject_id: string;
@@ -19,7 +20,7 @@ interface dataProp {
 
 interface DetailItemProp {
   title: string;
-  value: string | number;
+  value?: string | number;
 }
 
 const DetailItem: FC<DetailItemProp> = ({ title, value }) => {
@@ -84,7 +85,7 @@ const RegisterStepThree: FC = () => {
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
           <DetailItem title="Họ và tên" value={data.name} />
           <DetailItem title="Ngày sinh" value={data.birthday} />
-          <DetailItem title="Giới tính" value={ConvertGenderText(data.gender)} />
+          <DetailItem title="Giới tính" value={getLabelByValue(data.gender, genderList)} />
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           <DetailItem title="Số CMND/CCCD/Mã định danh công dân" value={data.person_id} />
